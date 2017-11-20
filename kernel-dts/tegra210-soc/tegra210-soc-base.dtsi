@@ -20,6 +20,7 @@
 #include "tegra210-thermal.dtsi"
 #include <dt-bindings/gpio/tegra-gpio.h>
 #include <dt-bindings/soc/tegra-io-pads.h>
+#include <dt-bindings/pinctrl/pinctrl-tegra-io-pad.h>
 #include <dt-bindings/ata/ahci-tegra.h>
 #include <dt-bindings/soc/tegra210-powergate.h>
 #include <dt-bindings/interrupt-controller/tegra-t21x-agic.h>
@@ -52,7 +53,7 @@
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x0>;
 			enable-method = "psci";
-			cpu-idle-states = <&C7 &CC6 &CC7 &SC2 &SC3 &SC4 &SC7>;
+			cpu-idle-states = <&C7 &CC6>;
 			errata_hwcaps = <0x7>;
 			cpu-ipc = <1024>;
 			next-level-cache = <&L2>;
@@ -64,7 +65,7 @@
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x1>;
 			enable-method = "psci";
-			cpu-idle-states = <&C7 &CC6 &CC7 &SC2 &SC3 &SC4 &SC7>;
+			cpu-idle-states = <&C7 &CC6>;
 			errata_hwcaps = <0x7>;
 			cpu-ipc = <1024>;
 			next-level-cache = <&L2>;
@@ -76,7 +77,7 @@
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x2>;
 			enable-method = "psci";
-			cpu-idle-states = <&C7 &CC6 &CC7 &SC2 &SC3 &SC4 &SC7>;
+			cpu-idle-states = <&C7 &CC6>;
 			errata_hwcaps = <0x7>;
 			cpu-ipc = <1024>;
 			next-level-cache = <&L2>;
@@ -88,7 +89,7 @@
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x3>;
 			enable-method = "psci";
-			cpu-idle-states = <&C7 &CC6 &CC7 &SC2 &SC3 &SC4 &SC7>;
+			cpu-idle-states = <&C7 &CC6>;
 			errata_hwcaps = <0x7>;
 			cpu-ipc = <1024>;
 			next-level-cache = <&L2>;
@@ -114,51 +115,6 @@
 				min-residency-us = <10000>;
 				idle-state-name = "cc6-cluster-powergated";
 				status = "okay";
-			};
-
-			CC7: cc7 {
-				compatible = "arm,idle-state";
-				arm,psci-suspend-param = <0x40000011>;
-				wakeup-latency-us = <500>;
-				min-residency-us = <1000>;
-				idle-state-name = "cc7-cluster-railgated";
-				status = "okay";
-			};
-
-			SC2: sc2 {
-				compatible = "arm,idle-state";
-				arm,psci-suspend-param = <0x40000007>;
-				wakeup-latency-us = <600>;
-				min-residency-us = <1500>;
-				idle-state-name = "sc2-dram-sr-mc-cg";
-				status = "okay";
-			};
-
-			SC3: sc3 {
-				compatible = "arm,idle-state";
-				arm,psci-suspend-param = <0x40000007>;
-				wakeup-latency-us = <700>;
-				min-residency-us = <1600>;
-				idle-state-name = "sc3-dram-sr-mc-cg-mempll-disabled";
-				status = "okay";
-			};
-
-			SC4: sc4 {
-				compatible = "arm,idle-state";
-				arm,psci-suspend-param = <0x40000007>;
-				wakeup-latency-us = <3000>;
-				min-residency-us = <5000>;
-				idle-state-name = "sc4-dram-sr-mc-cg-mempll-pllp-disabled";
-				status = "okay";
-			};
-
-			SC7: sc7 {
-				compatible = "arm,idle-state";
-				arm,psci-suspend-param = <0x4000001B>;
-				wakeup-latency-us = <5000>;
-				min-residency-us = <10000>;
-				idle-state-name = "sc7-vdd-soc-off";
-				status = "disabled";
 			};
 		};
 
@@ -205,6 +161,7 @@
 		clocks = <&tegra_car TEGRA210_CLK_BWMGR_EMC>;
 		clock-names = "emc";
 		status = "okay";
+		nvidia,bwmgr-use-shared-master;
 	};
 
 	reserved-memory {
@@ -433,7 +390,9 @@
 	};
 
 	timer@60005000 {
-		compatible = "nvidia,tegra210-timer", "nvidia,tegra30-timer";
+		compatible = "nvidia,tegra210-timer", "nvidia,tegra30-timer",
+			     "nvidia,tegra210-timer-wdt",
+			     "nvidia,tegra30-timer-wdt";
 		reg = <0x0 0x60005000 0x0 0x400>;
 		interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>,
@@ -682,7 +641,6 @@
 		compatible = "nvidia,tegra210-spi";
 		reg = <0x0 0x7000d400 0x0 0x200>;
 		interrupts = <0 59 0x04>;
-		nvidia,dma-request-selector = <&apbdma 15>;
 		iommus = <&smmu TEGRA_SWGROUP_PPCS>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -702,7 +660,6 @@
 		compatible = "nvidia,tegra210-spi";
 		reg = <0x0 0x7000d600 0x0 0x200>;
 		interrupts = <0 82 0x04>;
-		nvidia,dma-request-selector = <&apbdma 16>;
 		iommus = <&smmu TEGRA_SWGROUP_PPCS>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -722,7 +679,6 @@
 		compatible = "nvidia,tegra210-spi";
 		reg = <0x0 0x7000d800 0x0 0x200>;
 		interrupts = <0 83 0x04>;
-		nvidia,dma-request-selector = <&apbdma 17>;
 		iommus = <&smmu TEGRA_SWGROUP_PPCS>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -742,7 +698,6 @@
 		compatible = "nvidia,tegra210-spi";
 		reg = <0x0 0x7000da00 0x0 0x200>;
 		interrupts = <0 93 0x04>;
-		nvidia,dma-request-selector = <&apbdma 18>;
 		iommus = <&smmu TEGRA_SWGROUP_PPCS>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -762,7 +717,6 @@
 		compatible = "nvidia,tegra210-qspi";
 		reg = <0x0 0x70410000 0x0 0x1000>;
 		interrupts = <0 10 0x04>;
-		nvidia,dma-request-selector = <&apbdma 5>;
 		iommus = <&smmu TEGRA_SWGROUP_PPCS>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -1126,36 +1080,6 @@
 		status = "disabled";
 		clocks = <&tegra_car TEGRA210_CLK_PCLK>;
 		clock-names = "pclk";
-		clear-all-io-pads-dpd;
-		io-pad-defaults {
-			audio {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-
-			cam {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-
-			dbg {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-
-			dmic {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-
-			pex-ctrl {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-
-			spi {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-
-			uart {
-				nvidia,io-pad-init-voltage = <IO_PAD_VOLTAGE_1_8V>;
-			};
-		};
 
 		pex_io_dpd_disable_state: pex_en {
 			pex-io-dpd-signals-dis {
@@ -1634,7 +1558,7 @@
 			<&tegra_car TEGRA210_CLK_APB2APE>,
 			<&tegra_car TEGRA210_CLK_ADSP_NEON>,
 			<&tegra_car TEGRA210_CLK_ADSP>,
-			<&tegra_car TEGRA210_CLK_EMC>;
+			<&tegra_car TEGRA210_CLK_APE_EMC>;
 		clock-names = "adsp.ape", "adsp.apb2ape", "adspneon",
 				"adsp", "adsp.emc";
 		resets = <&tegra_car TEGRA210_RST_ADSP>;
@@ -2060,7 +1984,6 @@
 	dtv@7000c300 {
 		compatible = "nvidia,tegra210-dtv";
 		reg = <0x0 0x7000c300 0x0 0x100>;
-		nvidia,dma-request-selector = <11>;
 		dmas = <&apbdma 11>;
 		dma-names = "rx";
 		status = "disabled";
