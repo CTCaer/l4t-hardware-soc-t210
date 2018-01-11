@@ -48,7 +48,7 @@
 		#size-cells = <0>;
 		status = "disabled";
 
-		cpu@0 {
+		cpu_a57_0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x0>;
@@ -60,7 +60,7 @@
 			status = "disabled";
 		};
 
-		cpu@1 {
+		cpu_a57_1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x1>;
@@ -72,7 +72,7 @@
 			status = "disabled";
 		};
 
-		cpu@2 {
+		cpu_a57_2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x2>;
@@ -84,7 +84,7 @@
 			status = "disabled";
 		};
 
-		cpu@3 {
+		cpu_a57_3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57-64bit", "arm,armv8";
 			reg = <0x0 0x3>;
@@ -2231,20 +2231,280 @@
 		interrupts = <1 12 0x0108>;
 	};
 
-	ptm {
-		compatible = "nvidia,ptm";
-		reg = <0x0 0x72010000 0x0 0x1000>, /* funnel_major */
-		      <0x0 0x72030000 0x0 0x1000>, /* etf */
-		      <0x0 0x72040000 0x0 0x1000>, /* replicator */
-		      <0x0 0x72050000 0x0 0x1000>, /* etr */
-		      <0x0 0x72060000 0x0 0x1000>, /* tpiu */
-		      <0x0 0x73010000 0x0 0x1000>, /* funnel_bccplex */
-		      <0x0 0x73440000 0x0 0x1000>, /* ptm0 */
-		      <0x0 0x73540000 0x0 0x1000>, /* ptm1 */
-		      <0x0 0x73640000 0x0 0x1000>, /* ptm2 */
-		      <0x0 0x73740000 0x0 0x1000>, /* ptm3 */
-		      <0x0 0x72820000 0x0 0x1000>, /* funnel_minor */
-		      <0x0 0x72a1c000 0x0 0x1000>; /* ape */
+	ptm_a57_0: ptm@73440000 {
+		compatible = "arm,coresight-etm4x", "arm,primecell";
+		reg = <0x0 0x73440000 0x0 0x1000>;
+
+		cpu = <&cpu_a57_0>;
+		cpu-dynamic-power-gating;
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		port {
+			ptm_a57_0_out_port: endpoint {
+				remote-endpoint = <&funnel_bccplex_in_port0>;
+			};
+		};
+
+	};
+
+	ptm_a57_1: ptm@73540000 {
+		compatible = "arm,coresight-etm4x", "arm,primecell";
+		reg = <0x0 0x73540000 0x0 0x1000>;
+
+		cpu = <&cpu_a57_1>;
+		cpu-dynamic-power-gating;
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		port {
+			ptm_a57_1_out_port: endpoint {
+				remote-endpoint = <&funnel_bccplex_in_port1>;
+			};
+		};
+
+	};
+
+	ptm_a57_2: ptm@73640000 {
+		compatible = "arm,coresight-etm4x", "arm,primecell";
+		reg = <0x0 0x73640000 0x0 0x1000>;
+
+		cpu = <&cpu_a57_2>;
+		cpu-dynamic-power-gating;
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		port {
+			ptm_a57_2_out_port: endpoint {
+				remote-endpoint = <&funnel_bccplex_in_port2>;
+			};
+		};
+	};
+
+	ptm_a57_3: ptm@73740000 {
+		compatible = "arm,coresight-etm4x", "arm,primecell";
+		reg = <0x0 0x73740000 0x0 0x1000>;
+
+		cpu = <&cpu_a57_3>;
+		cpu-dynamic-power-gating;
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		port {
+			ptm_a57_3_out_port: endpoint {
+				remote-endpoint = <&funnel_bccplex_in_port3>;
+			};
+		};
+	};
+
+	funnel_bccplex@73010000 {
+		compatible = "arm,coresight-funnel", "arm,primecell";
+		reg = <0x0 0x73010000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>, <&tegra_car TEGRA210_CLK_DBGAPB>;
+		clock-names = "apb_pclk", "atclk";
+		status = "disabled";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				funnel_bccplex_out_port0: endpoint {
+					remote-endpoint = <&funnel_major_in_port0>;
+				};
+			};
+
+			port@1 {
+				reg = <0>;
+				funnel_bccplex_in_port0: endpoint {
+					slave-mode;
+					remote-endpoint = <&ptm_a57_0_out_port>;
+				};
+			};
+
+			port@2 {
+				reg = <1>;
+				funnel_bccplex_in_port1: endpoint {
+					slave-mode;
+					remote-endpoint = <&ptm_a57_1_out_port>;
+				};
+			};
+
+			port@3 {
+				reg = <2>;
+				funnel_bccplex_in_port2: endpoint {
+					slave-mode;
+					remote-endpoint = <&ptm_a57_2_out_port>;
+				};
+			};
+
+			port@4 {
+				reg = <3>;
+				funnel_bccplex_in_port3: endpoint {
+					slave-mode;
+					remote-endpoint = <&ptm_a57_3_out_port>;
+				};
+			};
+		};
+	};
+
+	funnel_major@72010000 {
+		compatible = "arm,coresight-funnel", "arm,primecell";
+		reg = <0x0 0x72010000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>, <&tegra_car TEGRA210_CLK_DBGAPB>;
+		clock-names = "apb_pclk", "atclk";
+		status = "disabled";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				funnel_major_out_port0: endpoint {
+					remote-endpoint = <&etf_in_port>;
+				};
+			};
+
+			port@1 {
+				reg = <0>;
+				funnel_major_in_port0: endpoint {
+					slave-mode;
+					remote-endpoint = <&funnel_bccplex_out_port0>;
+				};
+			};
+
+			port@2 {
+				reg = <1>;
+				funnel_major_in_port1: endpoint {
+					slave-mode;
+				};
+			};
+
+		};
+	};
+
+	etf@72030000 {
+		compatible = "arm,coresight-tmc", "arm,primecell";
+		reg = <0x0 0x72030000 0x0 0x1000>;
+		coresight-default-sink;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				etf_in_port: endpoint {
+					slave-mode;
+					remote-endpoint = <&funnel_major_out_port0>;
+				};
+			};
+
+			port@1 {
+				reg = <0>;
+				etf_out_port: endpoint {
+					remote-endpoint = <&replicator_in_port0>;
+				};
+			};
+		};
+	};
+
+	replicator@72040000 {
+		compatible = "arm,coresight-replicator";
+		reg = <0x0 0x72040000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				replicator_out_port0: endpoint {
+					remote-endpoint = <&etr_in_port>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				replicator_out_port1: endpoint {
+					remote-endpoint = <&tpiu_in_port>;
+				};
+			};
+
+			port@2 {
+				reg = <0>;
+				replicator_in_port0: endpoint {
+					slave-mode;
+					remote-endpoint = <&etf_out_port>;
+				};
+			};
+
+		};
+	};
+
+	etr@72050000 {
+		compatible = "arm,coresight-tmc", "arm,primecell";
+		reg = <0x0 0x72050000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		port {
+			etr_in_port: endpoint@0 {
+				slave-mode;
+				remote-endpoint = <&replicator_out_port0>;
+			};
+		};
+	};
+
+	tpiu@72060000 {
+		compatible = "arm,coresight-tpiu", "arm,primecell";
+		reg = <0x0 0x72060000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+
+		port {
+			tpiu_in_port: enpoint@0 {
+				slave-mode;
+				remote-endpoint = <&replicator_out_port1>;
+			};
+		};
+	};
+
+	ape@72a1c000 {
+        compatible = "arm,coresight", "arm,primecell";
+        reg = <0x0 0x72a1c000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
+    };
+
+	funnel_minor@72820000 {
+		compatible = "arm,coresight-funnel", "arm,primecell";
+		reg = <0x0 0x72820000 0x0 0x1000>;
+
+		clocks = <&tegra_car TEGRA210_CLK_CSITE>;
+		clock-names = "apb_pclk";
+		status = "disabled";
 	};
 
 	mselect {

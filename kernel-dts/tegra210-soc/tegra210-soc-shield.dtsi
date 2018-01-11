@@ -510,7 +510,43 @@
 		status = "disabled";
 	};
 
-	ptm {
+	ptm@73440000  {
+		status = "okay";
+	};
+
+	ptm@73540000 {
+		status = "okay";
+	};
+
+	ptm@73640000 {
+		status = "okay";
+	};
+
+	ptm@73740000 {
+		status = "okay";
+	};
+
+	funnel_bccplex@73010000 {
+		status = "okay";
+	};
+
+	funnel_major@72010000 {
+		status = "okay";
+	};
+
+	etf@72030000 {
+		status = "okay";
+	};
+
+	replicator@72040000 {
+		status = "okay";
+	};
+
+	etr@72050000 {
+		status = "okay";
+	};
+
+	tpiu@72060000 {
 		status = "okay";
 	};
 
