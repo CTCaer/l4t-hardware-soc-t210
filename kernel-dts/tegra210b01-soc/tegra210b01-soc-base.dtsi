@@ -218,7 +218,7 @@
 	cpus {
 		idle-states {
 			C7: c7 {
-				status = "okay";
+				status = "disabled";
 			};
 			CC6: cc6 {
 				status = "okay";
